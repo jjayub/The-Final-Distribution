@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction Map</title>
+    <style>
+        #myMap {
+            height: 350px;
+            width: 680px;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBiTU5wTrFdqfdS2Hw1LuwM5PYZQo93ipk">
+    </script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js">
+    </script>
+    <script src="Main.js"></script>
+    <h1>Crime Prediction</h1>
+    <script type="text/javascript">
+        var map;
+        var marker;
+        var myLatlng = new google.maps.LatLng(51.501481,-0.125064);
+        var geocoder = new google.maps.Geocoder();
+        var infowindow = new google.maps.InfoWindow();
+        function initialize(){
+            var mapOptions = {
+                zoom: 12,
+                center: myLatlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            map = new google.maps.Map(document.getElementById("myMap"), mapOptions);
+
+            marker = new google.maps.Marker({
+                map: map,
+                position: myLatlng,
+                draggable: true
+            });
+
+            geocoder.geocode({'latLng': myLatlng }, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    if (results[0]) {
+                        $('#latitude,#longitude').show();
+                        $('#address').val(results[0].formatted_address);
+                        $('#latitude').val(marker.getPosition().lat());
+                        $('#longitude').val(marker.getPosition().lng());
+                        infowindow.setContent(results[0].formatted_address);
+                        infowindow.open(map, marker);
+                    }
+                }
+            });
+
+            google.maps.event.addListener(marker, 'dragend', function() {
+
+                geocoder.geocode({'latLng': marker.getPosition()}, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        if (results[0]) {
+                            $('#address').val(results[0].formatted_address);
+                            $('#latitude').val(marker.getPosition().lat());
+                            $('#longitude').val(marker.getPosition().lng());
+                            infowindow.setContent(results[0].formatted_address);
+                            infowindow.open(map, marker);
+                        }
+                    }
+                });
+            });
+
+
+
+        }
+        google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+    <script>
+        let a;
+        fetch('https://jsonplaceholder.typicode.com/todos/1')
+            .then(response => response.json())
+            .then(json => a =json)
+        console.log(a)
+    </script>
+
+</head>
+<body>
+<div id="myMap"></div>
+<input id="address" type="text" style="width:600px;"/><br/>
+<input type="text" id="latitude" placeholder="Latitude"/>
+<input type="text" id="longitude" placeholder="Longitude"/>
+
+<button type="button" onclick="asd1() ">Predict!</button>
+<br>
+Hour <input id="hour" type="text" style="width:30px;"/>
+Minutes <input id="min" type="text" style="width:30px;"/>
+Month <input id="month" type="text" style="width:30px;"/>
+Day of the Month <input id="dayofmonth" type="text" style="width:30px;"/>
+Day of the Week <input id="dayofweek" type="text" style="width:30px;"/>
+
+<button type="button" onclick="filltime() ">Current Time</button>
+<br>
+<br>
+<h3>
+    Output:
+</h3>
+<div id="test">Fill and press predict!</div>
+</body>
+</html>
